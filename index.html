@@ -1,0 +1,1672 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="d3.js"></script>
+
+    <script src="d3.min.js"></script>
+    <script src="d3-legend.min.js"></script>
+    <script src="d3-legend.js"></script>
+    <script src="FileSaver.js"></script>
+    <script src="FileSaver.min.js"></script>
+    <style>
+      #datatext{
+        max-width: 20px;
+      }
+      #tooltip {
+        position: absolute;
+        display: none;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 3px;
+        box-shadow: -3px 3px 15px #939393;
+        color: white;
+        padding: 6px;
+        font-family: "Merriweather";
+        font-size: 1.1em;
+        max-width: 400px;
+        z-index: 100;
+      }
+
+      body {
+        background-color: rgb(245, 244, 241);
+        overflow-x: hidden;
+      }
+
+      #sections {
+        position: relative;
+        display: inline-block;
+        width: 300px;
+        top: 60px;
+        z-index: 1;
+        font-family: 'Times New Roman';
+        margin-right: 50px;
+        opacity: 1;
+      }
+
+      #circlelegend {
+        position: absolute;
+        display: inline-block;
+        width: 300px;
+        height: 400px;
+        top: 1383px;
+        z-index: 99;
+        margin-right: 50px;
+        opacity: 1;
+        fill: rgb(245, 244, 241);
+      }
+
+     
+
+      .step {
+        margin-bottom: 100px;
+        height: 150px;
+        font-family: "Domine";
+        font-weight: 400;
+        line-height: 1.4em;
+        text-align: justify;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+
+      h1,
+      h2 {
+        font-weight: 700;
+        text-align: right;
+        line-height: 32px;
+      }
+
+      h1 {
+        font-size: 35px;
+      }
+
+      strong {
+        color: rgb(245, 155, 155);
+      }
+
+      #graphic {
+        margin: auto;
+        width: 1500px;
+        flex-direction: row;
+        align-items: top;
+        justify-content: space-around;
+      }
+
+      #vis {
+        display: inline-block;
+        position: fixed;
+        top: 0px;
+        z-index: 1;
+        margin-left: 0;
+        height: 1000px;
+        width: 1500px;
+      }
+
+      .tick line {
+        stroke: "red";
+      }
+
+      svg circle:hover {
+        cursor: pointer;
+      }
+
+      .swatch {
+        fill: #939393;
+      }
+
+      .sizeLegend2 {
+        opacity: 0.7;
+      }
+
+      a {
+        color: rgb(221, 0, 255);
+        text-decoration: none;
+      }
+
+      img {
+        display: none;
+      }
+      #video {
+        position: absolute;
+        left: 570px;
+        top: 60px;
+        z-index: 10;
+        filter: opacity(80%);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="circlelegend"></div>
+   
+    <div id="tooltip"></div>
+    <div id="video">
+      <video id="video1" width="320" autoplay muted loop>
+        <source src="video1.mp4" />
+
+        Your browser does not support HTML video.
+      </video>
+    </div>
+    <div id="graphic">
+      <div id="sections">
+        <h1 style="text-align: center">Police Violence at US Protests</h1>
+        Over the summer Bellingcat, with the support of the open source community, collected a database of 475 cases of police violence against protesters. The protests sparked by the killing of George Floyd in Minneapolis, have since spread throughout the entire country, with some continuing now into the fall. This dataset helps paint a full picture of events that we have classified as an unjustified use of force by the police taking place between May 27th and July 12. This interactive data story is meant to help explore different patterns with the types of violations and offer a deeper look into the this summer of police violence.
+
+        <section class="step"></section>
+        <h1 style="text-align: center">Total Number of Violations</h1>
+        The 475 violations compiled by Bellingcat were spread out amongst 37 States and 106 different cities. Each instance providing a different insight into the unrest sparked by the killing of black men by white police officers. 
+        <section class="step"></section>
+        <h1 style="text-align: center">
+          Cases concentrated in Portland, New York, LA
+        </h1>
+        The graphic shows all 475 cases spread out around their geographical surroundings, color coded by their city to seperate the cases visually. Each case can scrolled over for more details or clicked on to be sent to the source. Use the selection box to isolate cities.<br>
+        <select name='Select City' id="selectButton">        <option value="start"> 
+          --Select a City--
+       </option> </select>
+        <h2 style="text-align: left">Top Five Cities</h2>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Portland,
+        OR: 58 Cases<br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New York
+        City, NY: 52 Cases<br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Seattle, WA:
+        30 Cases<br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Los Angeles, CA: 25 Cases<br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Richmond, VA: 22 Cases<br /><br />
+
+        <section class="step"></section>
+        <h1 style="text-align: center">Calendar: May, June, July Violations</h1>
+       All cases now spread throughout a calendar, showing clusters at the end of May/beginning of June. As well as throughout the weekends.
+
+       <br>
+       <select name='Select City' id="selectButton1">        <option value="start"> 
+        --Select a City--
+     </option> </select>
+       <h2 style="text-align: left">Top Five Dates</h2>
+      May 30th: 90 Cases<br /><br />
+       May 31st: 58 Cases<br /><br />
+      June 1st: 54 Cases<br /><br />
+      June 2nd:29 Cases<br /><br />
+      May 29th: 22 Cases<br /><br />
+        <section class="step"></section>
+        <h1 style="text-align: center">Grouping of Violations</h1>
+        As we group the violations, it is shows us nationwide, the most common use of force that police have taken against prtotestors.
+        <select name='Select City' id="selectButton2">        <option value="start"> 
+          --Select a City--
+       </option> </select>
+        <section class="step"></section>
+
+
+        <section class="step"></section>
+      </div>
+      <div id="vis"></div>
+    </div>
+
+    <script>
+      /// CREATE MAP AND MARGINS ///
+
+      const w = 1100;
+      const h = 1000;
+      var projection = d3
+        .geoMercator()
+        .translate([w / 2 + 20, h / 2 - 200])
+        .center([-95.3, 39.19])
+        .scale(1000);
+      var projection2 = d3
+        .geoMercator()
+        .translate([w / 2 + 20, h / 2 - 200])
+        .center([-122.67216, 45.51855])
+        .scale(2300000);
+
+      path = d3.geoPath().projection(projection);
+      path2 = d3.geoPath().projection(projection2);
+
+      var dataset;
+
+      var svg = d3
+        .selectAll("#vis")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h)
+        .attr("opacity", 1);
+
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 10)
+        .attr("y", 10)
+        .attr("width", 1001)
+        .attr("height", 654)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 3)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 10)
+        .attr("y", 35 -13 )
+        .attr("width", 1001)
+        .attr("height", 1)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 10)
+        .attr("y", 102)
+        .attr("width", 1001)
+        .attr("height", 1)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 10)
+        .attr("y", 102+92)
+        .attr("width", 1001)
+        .attr("height", 1)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 10)
+        .attr("y", 102+(92*2))
+        .attr("width", 1001)
+        .attr("height", 1)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 10)
+        .attr("y",  102+(92*3))
+        .attr("width", 1001)
+        .attr("height", 1)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 10)
+        .attr("y",  102+(92*4))
+        .attr("width", 1001)
+        .attr("height", 1)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+        svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 10)
+        .attr("y",  102+(92*5))
+        .attr("width", 1001)
+        .attr("height", 1)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 153)
+        .attr("y", 10)
+        .attr("width", 1)
+        .attr("height", 654)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 296)
+        .attr("y", 10)
+        .attr("width", 1)
+        .attr("height", 654)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 439)
+        .attr("y", 10)
+        .attr("width", 1)
+        .attr("height", 654)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 582)
+        .attr("y", 10)
+        .attr("width", 1)
+        .attr("height", 654)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 725)
+        .attr("y", 10)
+        .attr("width", 1)
+        .attr("height", 654)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+      svg
+        .append("rect")
+        .attr("class", "cal")
+        .attr("x", 868)
+        .attr("y", 10)
+        .attr("width", 1)
+        .attr("height", 654)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 0)
+        .attr("opacity", 0);
+
+      d3.json("us-states.geojson").then(function (data) {
+        svg
+          .selectAll("path")
+          .data(data.features)
+          .enter()
+          .append("path")
+          .attr("id", "main")
+          .attr("d", path)
+          .attr("opacity", 0.5)
+          .attr("fill", "#D6D6D6")
+          .attr("stroke", "black");
+      });
+      d3.csv("police_final_v10.csv").then(function (data) {
+        var parseTime = d3.timeParse("%d/%m/%Y");
+        data.forEach(function (d) {
+          d.date = parseTime(d.date);
+          d.x = +projection([+d.Longitude, +d.Latitude])[0];
+          d.y = +projection([+d.Longitude, +d.Latitude])[1];
+          dataset1 = data;
+          svg
+            .selectAll("circle")
+
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("id", "dataAnim")
+            .attr("class", function (d) {
+              return "date" + d.index;
+            })
+            .attr("cx", function (d) {
+              return projection([+d.Longitude, +d.Latitude])[0];
+            })
+            .attr("cy", function (d) {
+              return projection([+d.Longitude, +d.Latitude])[1];
+            })
+            .attr("fill", "red")
+            .attr("r", 15)
+            .attr("stroke", "yellow")
+            .attr("stroke-width", 4)
+            .attr("opacity", 0);
+        });
+
+        svg
+          .append("text")
+          .attr("class", "title")
+          .attr("x", w - 400)
+          .attr("y", 60)
+          .attr("font-family", "monospace")
+          .attr("font-size", "2.5em")
+          .attr("font-weight", 700)
+          .attr("opacity", 0)
+          .text("HELLO");
+
+       
+        var circleleg = d3
+          .select("#circlelegend")
+          .append("svg")
+          .attr("height", 300)
+          .attr("width", 300)
+          .attr("opacity", 1);
+
+        circleleg
+          .append("circle")
+          .attr("id", "circleleg")
+          .attr("class", "leg1")
+          .attr("cx", 20)
+          .attr("cy", 62)
+          .attr("r", 10)
+          .attr("stroke", "black")
+          .attr('fill',function(d){
+          });
+
+        circleleg
+          .append("circle")
+          .attr("id", "circleleg")
+          .attr("class", "leg2")
+          .attr("cx", 20)
+          .attr("cy", 98)
+
+          .attr("r", 10)
+          .attr("stroke", "black");
+
+        circleleg
+          .append("circle")
+          .attr("id", "circleleg")
+          .attr("class", "leg3")
+          .attr("cx", 20)
+          .attr("cy", 134)
+
+          .attr("r", 10)
+          .attr("stroke", "black");
+
+        circleleg
+          .append("circle")
+          .attr("id", "circleleg")
+          .attr("class", "leg4")
+          .attr("cx", 20)
+          .attr("cy", 170)
+
+          .attr("r", 10)
+          .attr("stroke", "black");
+
+        circleleg
+          .append("circle")
+          .attr("id", "circleleg")
+          .attr("class", "leg5")
+          .attr("cx", 20)
+          .attr("cy", 206)
+
+          .attr("r", 10)
+          .attr("stroke", "black");
+
+        window.onload = circleAnim();
+
+
+        d3.select("#selectButton")
+      .selectAll('myOptions')
+     	.data(d3.map(data, function(d){return d.City;}).keys().sort())
+      .enter()
+    	.append('option')
+      .text(function (d){return d}) // text showed in the menu
+      .attr('value',function(d){return d})
+      d3.select("#selectButton1")
+      .selectAll('myOptions')
+     	.data(d3.map(data, function(d){return d.City;}).keys().sort())
+      .enter()
+    	.append('option')
+      .text(function (d){return d}) // text showed in the menu
+      .attr('value',function(d){return d})
+      d3.select("#selectButton2")
+      .selectAll('myOptions')
+     	.data(d3.map(data, function(d){return d.City;}).keys().sort())
+      .enter()
+    	.append('option')
+      .text(function (d){return d}) // text showed in the menu
+      .attr('value',function(d){return d})
+
+        function circleAnim() {
+          for (let yes = 0; yes < dataset1.length; yes++) {
+            setTimeout(
+              function () {
+                if (activeIndex === 0) {
+                  d3.selectAll("#dataAnim.date" + String(yes))
+                    .raise()
+                    .transition()
+                    .attr("opacity", 0)
+                    .transition()
+                    .duration(500)
+                    .attr("opacity", 1)
+                    .attr("r", 15)
+                    .attr("stroke", "yellow")
+                    .attr("stroke-width", 3)
+                    .transition()
+                    .duration(500)
+                    .attr("r", 5)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 1);
+                  d3.selectAll(".title")
+                    .transition()
+                    .attr("opacity", 1)
+                    .text(
+                      String(dataset1[yes].date).replace(
+                        "00:00:00 GMT+0200 (Central European Summer Time)",
+                        ""
+                    ));
+                } else {
+                  d3.selectAll("#dataAnim").remove();
+                  d3.selectAll(".title").remove();
+                }
+              },
+
+              50 * yes
+            );
+          }
+        }
+      });
+      setTimeout(function () {
+        svg
+          .append("text")
+          .attr("class", "port_streets")
+          .attr("transform", "rotate(20 " + -1350 + " " + 1900 + ")")
+          .attr("font-family", "Arial")
+          .attr("font-size", ".8em")
+          .attr("opacity", 0)
+          .text("Hawthorne Bridge");
+        svg
+          .append("text")
+          .attr("class", "port_streets")
+          .attr("transform", "rotate(20 " + -1150 + " " + 1400 + ")")
+          .attr("font-family", "Arial")
+          .attr("font-size", ".8em")
+          .attr("opacity", 0)
+          .text("Main St");
+        svg
+          .append("text")
+          .attr("class", "port_streets")
+          .attr("transform", "rotate(20 " + -600 + " " + 2000 + ")")
+          .attr("font-family", "Arial")
+          .attr("font-size", ".8em")
+          .attr("opacity", 0)
+          .text("Morrison Bridge");
+
+        svg
+          .append("text")
+          .attr("class", "port_streets")
+          .attr("x", 710)
+          .attr("y", 35)
+          .attr("font-family", "Arial")
+          .attr("font-size", ".8em")
+          .attr("opacity", 0)
+          .text("Burnside Bridge");
+      }, 10);
+
+      function draw1() {
+        d3.select("#vis").selectAll("#main").transition().attr("opacity", 0.5);
+
+        if (typeof simulation !== "undefined") {
+          simulation.stop();
+        }
+
+        d3.selectAll("#datacircle")
+          .transition()
+          .attr("opacity", 1)
+          .attr("r", 5)
+          .attr("stroke-width", 1)
+          .attr("stroke", "black")
+          .attr("cx", function (d) {
+            return projection([+d.Longitude, +d.Latitude])[0];
+          })
+          .attr("cy", function (d) {
+            return projection([+d.Longitude, +d.Latitude])[1];
+          });
+
+        d3.selectAll(".title1")
+          .transition()
+          .attr("x", w - 500)
+          .attr("y", 60)
+          .attr("font-family", "monospace")
+          .attr("font-size", "2.5em")
+          .attr("opacity", 1)
+          .text("May 27 - July 12, 2020");
+        i = 0;
+        d3.selectAll(".label").transition().attr("opacity", 0);
+      }
+
+      function draw2() {
+        d3.selectAll("#dataAnim").remove();
+        d3.selectAll(".title").remove();
+        
+        svg.append('rect')
+            .attr('class','calrect1')
+            .attr('x',8)
+            .attr('y',0)
+            .attr('width', 1005 )
+            .attr('height', 25)
+            .attr('rx', 10)
+            .attr('ry', 10)
+            .attr('opacity',0)
+            .style('fill', '#cc5656')
+       svg.append('rect')
+       .lower()
+            .attr('class','calrect2')
+            .attr('x',8)
+            .attr('y',0)
+            .attr('width', 1005 )
+            .attr('height', 660)
+            .attr('rx', 0)
+            .attr('ry', 0)
+            .style('fill', 'white')
+            .attr('opacity',0)
+            
+
+        var dow = [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ];
+        svg
+          .append("text")
+          .attr("class", "calLabel")
+          .attr("x", 50)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .text(dow[0]);
+
+        svg
+
+          .append("text")
+          .attr("class", "calLabel")
+          .attr("x", 195)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .text(dow[1]);
+        svg
+
+          .append("text")
+          .attr("class", "calLabel")
+          .attr("x", 340)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .text(dow[2]);
+        svg
+          .append("text")
+          .attr("class", "calLabel")
+          .attr("x", 485)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .text(dow[3]);
+        svg
+
+          .append("text")
+          .attr("class", "calLabel")
+          .attr("x", 630)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .text(dow[4]);
+        svg
+
+          .append("text")
+          .attr("class", "calLabel")
+          .attr("x", 775)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .text(dow[5]);
+        svg
+
+          .append("text")
+          .attr("class", "calLabel")
+          .attr("x", 920)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .text(dow[6]);
+        svg
+
+          .append("text")
+          .attr("class", "calLabel1")
+          .attr("x", 38)
+          .attr("y", 120)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .attr("font-weight", 700)
+          .attr("font-size", "1.8em")
+          .text("June")
+          .attr('fill', '#067BC2');
+          svg
+
+.append("text")
+.attr("class", "calLabel1")
+.attr("x", 33)
+.attr("y", 43)
+.attr("text-anchor", "middle")
+.attr("opacity", 0)
+.attr("font-weight", 700)
+.attr("font-size", "1.8em")
+.text("May")
+.attr('fill', '#067BC2');
+        svg
+
+          .append("text")
+          .attr("class", "calLabel1")
+          .attr("x", 690 - 365)
+          .attr("y", 490)
+          .attr("text-anchor", "middle")
+          .attr("opacity", 0)
+          .attr("font-weight", 700)
+          .attr("font-size", "1.8em")
+          .text("July")
+          .attr('fill', '#067BC2');
+
+        for (let i = 0; i < 45; i++) {
+          svg
+            .append("text")
+            .attr("class", "numLabel")
+            .attr("x", function () {
+              if (i / 7 <= 1) {
+                return i * 142;
+              }
+              if (i / 7 <= 2) {
+                return (i - 7) * 142;
+              }
+              if (i / 7 <= 3) {
+                return (i - 14) * 142;
+              }
+              if (i / 7 <= 4) {
+                return (i - 21) * 142;
+              }
+              if (i / 7 <= 5) {
+                return (i - 28) * 142;
+              }
+              if (i / 7 <= 6) {
+                return (i - 35) * 142;
+              }
+            })
+            .attr("y", function () {
+              if (i / 7 <= 1) {
+                return 185;
+              }
+              if (i / 7 <= 2) {
+                return 277;
+              }
+              if (i / 7 <= 3) {
+                return 370;
+              }
+              if (i / 7 <= 4) {
+                return 462;
+              }
+              if (i / 7 <= 5) {
+                return 554;
+              }
+              if (i / 7 <= 6) {
+                return 660;
+              }
+              
+            })
+            .attr("opacity", 0)
+            .attr("text-anchor", "middle")
+            .text(function () {
+              if (i <= 30) {
+                return i;
+              } else {
+                return i - 30;
+              }
+            });
+        }
+        for (let i = 0; i < 8; i++) {
+          svg
+            .append("text")
+            .attr("class", "numLabel")
+            .attr("x", function () {
+              if (i / 7 <= 1) {
+                return i * 142;
+              }
+              if (i / 7 <= 2) {
+                return (i - 7) * 142;
+              }
+              if (i / 7 <= 3) {
+                return (i - 14) * 142;
+              }
+              if (i / 7 <= 4) {
+                return (i - 21) * 142;
+              }
+              if (i / 7 <= 5) {
+                return (i - 28) * 142;
+              }
+              if (i / 7 <= 6) {
+                return (i - 35) * 142;
+              }
+            })
+            .attr("y", function () {
+              if (i / 7 <= 1) {
+                return 90;
+              }
+              if (i / 7 <= 2) {
+                return 277;
+              }
+              if (i / 7 <= 3) {
+                return 370;
+              }
+              if (i / 7 <= 4) {
+                return 462;
+              }
+              if (i / 7 <= 5) {
+                return 554;
+              }
+              if (i / 7 <= 6) {
+                return 660;
+              }
+              
+            })
+            .attr("opacity", 0)
+            .attr("text-anchor", "middle")
+            .text(function () { return i + 24
+            });
+        }
+        svg
+          .append("text")
+          .attr("class", "title1")
+          .attr("x", w - 400)
+          .attr("y", 60)
+          .attr("font-family", "monospace")
+          .attr("font-size", "2.5em")
+          .attr("font-weight", 700)
+          .attr("opacity", 0)
+          .text("HELLO");
+        d3.csv("police_final_v10.csv").then(function (data) {
+          var parseTime = d3.timeParse("%d/%m/%Y");
+          data.forEach(function (d) {
+            d.date = parseTime(d.date);
+            d.x = +projection([+d.Longitude, +d.Latitude])[0];
+            d.y = +projection([+d.Longitude, +d.Latitude])[1];
+            dataset = data;
+            svg
+              .selectAll("circle")
+              .data(data)
+              .enter()
+              .append("circle")
+              .attr("id", "datacircle")
+              .attr("cx", function (d) {
+                return projection([+d.Longitude, +d.Latitude])[0];
+              })
+              .attr("cy", function (d) {
+                return projection([+d.Longitude, +d.Latitude])[1];
+              })
+              .attr("fill", "red")
+              .attr("r", 15)
+              .attr("stroke", "yellow")
+              .attr("stroke-width", 4)
+              .attr("opacity", 1)
+              .transition()
+              .attr("r", 5)
+              .attr("stroke", "black")
+              .attr("stroke-width", 1);
+            svg.selectAll('text')
+            .data(data)
+            .enter()
+            .append('text')
+            .attr('id','datatext')
+            .text(function(d){return d['Brief description of incident']})
+            .attr('opacity',0)
+           
+          });
+        });
+
+        d3.selectAll("#datacircle")
+          .transition()
+          .attr("opacity", 1)
+          .attr("r", 5)
+          .attr("stroke", "black")
+          .attr("stroke-width", 1)
+          .attr("cx", function (d) {
+            return projection([+d.Longitude, +d.Latitude])[0];
+          })
+          .attr("cy", function (d) {
+            return projection([+d.Longitude, +d.Latitude])[1];
+          })
+          .attr("fill", "red");
+
+        d3.select("#vis")
+          .selectAll(".title1")
+          .transition()
+          .attr("opacity", 1)
+          .attr("font-size", "2em")
+          .attr("x", w - 500)
+          .attr("font-weight", 700)
+          .text("475 Cases, 37 States, 106 Cities");
+
+        d3.selectAll(".label").transition().attr("opacity", 0);
+      }
+    
+      function draw3(){
+        svg
+          .selectAll("#datacircle")
+          .raise()
+          .on("mouseover", mouseOver)
+          .on("mouseout", mouseOut)
+          .on("click", click);
+          function mouseOver(d, i) {
+          var time = d3.timeFormat("%B %d, %Y")
+          console.log("hi");
+          d3.select(this)
+            .transition("mouseover")
+            .duration(0)
+            .attr("stroke-width", 5)
+            .attr("stroke", "yellow");
+
+          d3
+            .select("#tooltip")
+            .style("left", d3.event.pageX + 10 + "px")
+            .style("top", d3.event.pageY - 25 + "px")
+            .style("display", "inline-block")
+            .html(`<strong>Date:</strong> ${time(d.date)}
+                        <br> <strong>City</strong> ${d.City}
+                        <br> <strong>Type of Violation:</strong> ${
+                          d["Type of Violation"]
+                        } <br> <strong>Description:</strong><br> ${
+                          d["Description"]
+                        }`)
+                      }
+      function mouseOut(d, i) {
+          d3.select("#tooltip").style("display", "none");
+          d3.select(this)
+            .transition("mouseout")
+            .duration(0)
+            .attr("stroke-width", 1)
+            .attr("stroke", "black");
+        }
+
+        function click(d, i) {
+          var win = window.open(d.Hyperlink, "_blank");
+          win.focus();
+        }
+        d3.selectAll(".label").transition().attr("opacity", 0);
+        d3.selectAll(".label").transition().attr("opacity", 0);
+        d3.select("#vis").selectAll(".title1").transition().attr("opacity", 0);
+        d3.select("#vis").selectAll("#main").transition().attr("opacity", 0.5);
+        hex = [
+      "#FFFF00", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
+        "#FFDBE5", "#7A4900", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
+        "#5A0007", "#809693", "#FEFFE6", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
+        "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9", "#B903AA", "#D16100",
+        "#DDEFFF", "#7B4F4B", "#A1C299", "#300018", "#0AA6D8", "#013349", "#00846F",
+        "#372101", "#FFB500", "#C2FFED", "#A079BF", "#CC0744", "#C0B9B2", "#C2FF99", "#001E09",
+        "#00489C", "#6F0062", "#0CBD66", "#EEC3FF", "#456D75", "#B77B68", "#7A87A1", "#788D66",
+        "#885578", "#FAD09F", "#FF8A9A", "#D157A0", "#BEC459", "#456648", "#0086ED", "#886F4C",
+        
+        "#34362D", "#B4A8BD", "#00A6AA", "#452C2C", "#636375", "#A3C8C9", "#FF913F", "#938A81",
+        "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
+        "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
+        "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329",
+        "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C",
+        "#83AB58", "#001C1E", "#D1F7CE", "#004B28", "#C8D0F6", "#A3A489", "#806C66", "#222800",
+        "#BF5650", "#E83000", "#66796D", "#DA007C", "#FF1A59", "#8ADBB4", "#1E0200", "#5B4E51",
+        "#C895C5", "#320033", "#FF6832", "#66E1D3", "#CFCDAC", "#D0AC94", "#7ED379", "#012C58",
+        
+        "#7A7BFF", "#D68E01", "#353339", "#78AFA1", "#FEB2C6", "#75797C", "#837393", "#943A4D",
+        "#B5F4FF", "#D2DCD5", "#9556BD", "#6A714A", "#001325", "#02525F", "#0AA3F7", "#E98176",
+        "#DBD5DD", "#5EBCD1", "#3D4F44", "#7E6405", "#02684E", "#962B75", "#8D8546", "#9695C5",
+        "#E773CE", "#D86A78", "#3E89BE", "#CA834E", "#518A87", "#5B113C", "#55813B", "#E704C4",
+         "#A97399", "#4B8160", "#59738A", "#FF5DA7", "#F7C9BF", "#643127", "#513A01",
+        "#6B94AA", "#51A058", "#A45B02", "#1D1702", "#E20027", "#E7AB63", "#4C6001", "#9C6966",
+        "#64547B", "#97979E", "#006A66", "#391406", "#F4D749", "#0045D2", "#006C31", "#DDB6D0",
+        "#7C6571", "#9FB2A4", "#00D891", "#15A08A", "#BC65E9", "#FFFFFE", "#C6DC99", "#203B3C",
+
+        "#671190", "#6B3A64", "#F5E1FF", "#FFA0F2", "#CCAA35", "#374527", "#8BB400", "#797868",
+        "#C6005A", "#3B000A", "#C86240", "#29607C", "#402334", "#7D5A44", "#CCB87C", "#B88183",
+        "#AA5199", "#B5D6C3", "#A38469", "#9F94F0", "#A74571", "#B894A6", "#71BB8C", "#00B433",
+        "#789EC9", "#6D80BA", "#953F00", "#5EFF03", "#E4FFFC", "#1BE177", "#BCB1E5", "#76912F",
+        "#003109", "#0060CD", "#D20096", "#895563", "#29201D", "#5B3213", "#A76F42", "#89412E",
+        "#1A3A2A", "#494B5A", "#A88C85", "#F4ABAA", "#A3F3AB", "#00C6C8", "#EA8B66", "#958A9F",
+        "#BDC9D2", "#9FA064", "#BE4700", "#658188", "#83A485", "#453C23", "#47675D", "#3A3F00",
+        "#061203", "#DFFB71", "#868E7E", "#98D058", "#6C8F7D", "#D7BFC2", "#3C3E6E", "#D83D66",
+        
+        "#2F5D9B", "#6C5E46", "#D25B88", "#5B656C", "#00B57F", "#545C46", "#866097", "#365D25",
+        "#252F99", "#00CCFF", "#674E60", "#FC009C", "#92896B"
+        ];
+        color = d3.scaleOrdinal().domain([0, 97]).range(hex);
+
+d3.selectAll("#main").transition().attr("opacity", 0.5);
+
+d3.selectAll("#datacircle")
+  .transition()
+  .duration(500)
+  .attr("fill", function (d) {
+    return color(d.cluster);
+  })
+  .attr("r", 8)
+  .attr("cx", function (d) {
+    return d.x1;
+  })
+  .attr("cy", function (d) {
+    return d.y1;
+  })
+  
+  d3.select('#selectButton')
+  .on('change', function(){
+    d3.selectAll('#datacircle')
+    .transition()
+    .attr('opacity',function(d){
+      if (d.City === d3.select('#selectButton').property('value')){return 1}
+      if (d3.select('#selectButton').property('value')==='start')
+      {return 1}
+      else{
+        return 0.2
+      }
+    })
+    .attr('stroke-width',function(d){
+      if (d.City === d3.select('#selectButton').property('value')){return 3}
+      else{
+        return 1
+      }
+    })
+  
+  }
+  )
+
+  setTimeout(function () {
+          d3.select(".leg1")
+            .transition()
+            .attr("fill", function () {
+              return d3
+                .selectAll("#datacircle")
+                .filter(function (d) {
+                  return d.City === "Portland, OR";
+                })
+                .attr("fill");
+            });
+
+          d3.select(".leg2")
+            .transition()
+            .attr("fill", function () {
+              return d3
+                .selectAll("#datacircle")
+                .filter(function (d) {
+                  return d.City === "New York City, NY";
+                })
+                .attr("fill");
+            });
+
+          d3.select(".leg3")
+            .transition()
+            .attr("fill", function () {
+              return d3
+                .selectAll("#datacircle")
+                .filter(function (d) {
+                  return d.City === "Seattle, WA";
+                })
+                .attr("fill");
+            });
+
+          d3.select(".leg4")
+            .transition()
+            .attr("fill", function () {
+              return d3
+                .selectAll("#datacircle")
+                .filter(function (d) {
+                  return d.City === "Los Angeles, CA";
+                })
+                .attr("fill");
+            });
+
+          d3.select(".leg5")
+            .transition()
+            .attr("fill", function () {
+              return d3
+
+                .selectAll("#datacircle")
+                .filter(function (d) {
+                  return d.City === "Richmond, VA";
+                })
+                .attr("fill");
+            });
+        }, 501);
+
+        d3.selectAll(".label").transition().attr("opacity", 0);
+        d3.selectAll(".cal").transition().attr("opacity", 0);
+        d3.selectAll(".calLabel").transition().attr("opacity", 0);
+        d3.selectAll(".numLabel").transition().attr("opacity", 0);
+        d3.selectAll(".calLabel1").transition().attr("opacity", 0);
+        d3.select('.calrect1').transition().attr('opacity',0)
+  d3.select('.calrect2').transition().attr('opacity',0)
+  d3.select('.calLabel').transition().attr('opacity',0)
+      }
+      function draw4() {
+  d3.select('.calrect1').transition().attr('opacity',1)
+  d3.select('.calrect2').transition().attr('opacity',.8)
+  
+        d3.select('#selectButton1')
+  
+  .on('change', function(){
+    d3.selectAll('#datacircle')
+    .transition()
+    .attr('opacity',function(d){
+      if (d.City === d3.select('#selectButton1').property('value')){return 1}
+      if (d3.select('#selectButton1').property('value')==='start')
+      {return 1}
+      else{
+        return 0.2
+      }
+    })
+    .attr('stroke-width',function(d){
+      if (d.City === d3.select('#selectButton1').property('value')){return 2}
+      else{
+        return 1
+      }
+    })
+    .attr('r',function(d){
+      if (d.City === d3.select('#selectButton1').property('value')){return 6}
+      else{
+        return 3
+      }
+    })
+  
+  }
+  )
+
+        d3.selectAll('#main').transition().attr('opacity',0)
+        d3.selectAll(".numLabel").transition().attr("opacity", 1)
+        .attr('text-anchor','left')
+        .attr('transform', 'translate(' + -122 + ',' + 0 + ')')
+        d3.selectAll(".cal").transition().attr("opacity", 1);
+        d3.selectAll(".label").transition().attr("opacity", 0);
+        d3.selectAll(".calLabel")
+          .transition()
+          .attr("opacity", 1)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.2em")
+          .attr('font-weight',700)
+          .attr('fill','white')
+          .attr("transform", "translate(" + 0 + ", " + -15 + ")")
+        d3.selectAll(".calLabel1")
+          .transition()
+          .attr("opacity", 1)
+          .attr("font-family", "monospace")
+          d3.selectAll("#datacircle")
+          .transition()
+          .duration(500)
+          .attr("r", 4)
+          .attr("cx", function (d) {
+            return d.x2;
+          })
+          .attr("cy", function (d) {
+            return d.y2;
+          })
+          .attr('opacity',1);
+      }
+
+      function draw5() {
+        d3.select('.calLabel').transition().attr('opacity',0)
+        d3.select('.calrect1').transition().attr('opacity',0)
+  d3.select('.calrect2').transition().attr('opacity',0)
+        d3.select('#selectButton2')
+  
+  .on('change', function(){
+    d3.selectAll('#datacircle')
+    .transition()
+    .attr('opacity',function(d){
+      if (d.City === d3.select('#selectButton2').property('value')){return 1}
+      if (d3.select('#selectButton2').property('value')==='start')
+      {return 1}
+      else{
+        return 0.2
+      }
+    })
+    .attr('stroke-width',function(d){
+      if (d.City === d3.select('#selectButton2').property('value')){return 2}
+      else{
+        return 1
+      }
+    })
+
+
+    d3.selectAll('#l1')
+    .transition()
+    .text( 
+      function(d){
+        if (d3.select('#selectButton2').property('value') ==='start')
+        {return 'Physical Assault:'+dataset.filter(function(d){
+        return d['Type of Violation']==='Physical Assault'}).length}
+      else{ 
+        return 'Physical Assault:' + dataset.filter(function(d){
+        return d['City'] === d3.select('#selectButton2').property('value') & d['Type of Violation']==='Physical Assault'}).length
+      }
+      }
+    )
+  
+
+    d3.selectAll('#l2')
+    .transition()
+    .text(
+      function(d){
+        if (d3.select('#selectButton2').property('value') ==='start')
+        {return 'Less Lethal Round:'+dataset.filter(function(d){
+        return d['Type of Violation']==='Less Lethal Round'}).length}
+      else{ 
+        return 'Less Lethal Round:' + dataset.filter(function(d){
+        return d['City'] === d3.select('#selectButton2').property('value') & d['Type of Violation']==='Less Lethal Round'}).length
+      }
+      }
+    )
+    d3.selectAll('#l3')
+    .transition()
+    .text(
+      function(d){
+        if (d3.select('#selectButton2').property('value') ==='start')
+        {return 'Tear Gas:'+dataset.filter(function(d){
+        return d['Type of Violation']==='Tear Gas'}).length}
+      else{ 
+        return 'Tear Gas:' + dataset.filter(function(d){
+        return d['City'] === d3.select('#selectButton2').property('value') & d['Type of Violation']==='Tear Gas'}).length
+      }
+      }
+    )
+    d3.selectAll('#l4')
+    .transition()
+    .text(
+      function(d){
+        if (d3.select('#selectButton2').property('value') ==='start')
+        {return 'Arrest/Detention:'+dataset.filter(function(d){
+        return d['Type of Violation']==='Arrest/Detention'}).length}
+      else{ 
+        return 'Arrest/Detention:' + dataset.filter(function(d){
+        return d['City'] === d3.select('#selectButton2').property('value') & d['Type of Violation']==='Arrest/Detention'}).length
+      }
+      }
+    )
+    d3.selectAll('#l5')
+    .transition()
+    .text(
+      function(d){
+        if (d3.select('#selectButton2').property('value') ==='start')
+        {return 'Pepper Spray:'+dataset.filter(function(d){
+        return d['Type of Violation']==='Pepper Spray'}).length}
+      else{ 
+        return 'Pepper Spray:' + dataset.filter(function(d){
+        return d['City'] === d3.select('#selectButton2').property('value') & d['Type of Violation']==='Pepper Spray'}).length
+      }
+      }
+    )
+    d3.selectAll('#l6')
+    .transition()
+    .text(
+      function(d){
+        if (d3.select('#selectButton2').property('value') ==='start')
+        {return 'Intimidation:'+dataset.filter(function(d){
+        return d['Type of Violation']==='Intimidation'}).length}
+      else{ 
+        return 'Intimidation:' + dataset.filter(function(d){
+        return d['City'] === d3.select('#selectButton2').property('value') & d['Type of Violation']==='Intimidation'}).length
+      }
+      }
+    )
+    d3.selectAll('#l7')
+    .transition()
+    .text(
+      function(d){
+        if (d3.select('#selectButton2').property('value') ==='start')
+        {return 'Killing:'+dataset.filter(function(d){
+        return d['Type of Violation']==='Killing'}).length}
+      else{ 
+        return 'Killing:' + dataset.filter(function(d){
+        return d['City'] === d3.select('#selectButton2').property('value') & d['Type of Violation']==='Killing'}).length
+      }
+      }
+    )
+    d3.selectAll('#l8')
+    .transition()
+    .text(
+      function(d){
+        if (d3.select('#selectButton2').property('value') ==='start')
+        {return 'Other:'+dataset.filter(function(d){
+        return d['Type of Violation']==='Other'}).length}
+      else{ 
+        return 'Other:' + dataset.filter(function(d){
+        return d['City'] === d3.select('#selectButton2').property('value') & d['Type of Violation']==='Other'}).length
+      }
+      }
+    )
+
+ 
+  
+  
+  
+  
+  }
+  )
+       /* simulation = d3.forceSimulation(dataset);
+
+// Define each tick of simulation
+simulation.on("tick", () => {
+  d3.selectAll("#datacircle")
+    .attr("cx", (d) => d.x)
+    .attr("cy", (d) => d.y)
+    .attr("r", 8);
+});
+
+simulation
+  .force("charge", d3.forceManyBody().strength([0.9]))
+  .force(
+    "forceX",
+    d3
+      .forceX(function(d){
+        if (d['Type of Violation'] === 'Less Lethal Round'){return 750 - 365}
+        if (d['Type of Violation'] === 'Physical Assault'){return 475 - 365}
+        if (d['Type of Violation'] === 'Tear Gas'){return 1060 - 365}
+        if (d['Type of Violation'] === 'Arrest/Detention'){return 1360 - 365}
+        if (d['Type of Violation'] === 'Intimidation'){return 750 - 365}
+        if (d['Type of Violation'] === 'Pepper Spray'){return 475 - 365}
+        if (d['Type of Violation'] === 'Killing'){return 1060 - 365}
+        if (d['Type of Violation'] === 'Other'){return 1360 - 365}
+      })
+      .strength([0.99])
+  )
+  .force(
+    "forceY",
+    d3
+      .forceY(function(d){
+        if (d['Type of Violation'] === 'Less Lethal Round'){return 200}
+        if (d['Type of Violation'] === 'Physical Assault'){return 200}
+        if (d['Type of Violation'] === 'Tear Gas'){return 200}
+        if (d['Type of Violation'] === 'Arrest/Detention'){return 200}
+        if (d['Type of Violation'] === 'Intimidation'){return 500}
+        if (d['Type of Violation'] === 'Pepper Spray'){return 500}
+        if (d['Type of Violation'] === 'Killing'){return 500}
+        if (d['Type of Violation'] === 'Other'){return 500}
+      }).strength([.99])
+  )
+  .force("collide", d3.forceCollide([9]));
+
+setTimeout(function () {
+  var pos1 = [];
+  d3.selectAll("#datacircle").each(function (d) {
+    pos1.push({
+      index: d["index"],
+      x3: d3.select(this).attr("cx"),
+      y3: d3.select(this).attr("cy"),
+    });
+  });
+  console.log(JSON.stringify(pos1));
+}, 10000);
+
+*/
+
+        d3.selectAll("#datacircle")
+          .transition()
+          .duration(700)
+          .attr("cx", function (d) {
+            return d.x3;
+          })
+          .attr("cy", function (d) {
+            return d.y3;
+          })
+          .attr('r',8);
+        d3.selectAll(".numLabel").transition().attr("opacity", 0);
+        d3.selectAll(".cal").transition().attr("opacity", 0);
+        d3.selectAll(".calLabel").transition().attr("opacity", 0);
+        d3.selectAll(".calLabel1").transition().attr("opacity", 0);
+        svg
+          .append("text")
+          .attr("id", "l1")
+          .attr("class", "label")
+          .attr("x", 110)
+          .attr("y", 320)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.3em")
+          .attr("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", 700)
+          .text("Physical Assault:113");
+
+        svg
+          .append("text")
+          .attr("id", "l2")
+          .attr("class", "label")
+          .attr("x", 400)
+          .attr("y", 320)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.3em")
+          .attr("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", 700)
+          .text("Less Lethal Round: 105");
+        svg
+          .append("text")
+          .attr("id", "l3")
+          .attr("class", "label")
+          .attr("x", 700)
+          .attr("y", 320)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.3em")
+          .attr("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", 700)
+          .text("Tear Gas: 72");
+
+        svg
+          .append("text")
+          .attr("id", "l4")
+          .attr("class", "label")
+          .attr("x", 1000)
+          .attr("y", 320)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.3em")
+          .attr("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", 700)
+          .text("Arrest/Detention: 67");
+
+        svg
+          .append("text")
+          .attr("id", "l5")
+          .attr("class", "label")
+          .attr("x", 100)
+          .attr("y", 600)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.3em")
+          .attr("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", 700)
+          .text("Pepper Spray: 59");
+
+        svg
+          .append("text")
+          .attr("id", "l6")
+          .attr("class", "label")
+          .attr("x", 400)
+          .attr("y", 600)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.3em")
+          .attr("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", 700)
+          .text("Intimidation: 39");
+        svg
+          .append("text")
+          .attr("id", "l7")
+          .attr("class", "label")
+          .attr("x", 700)
+          .attr("y", 600)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.3em")
+          .attr("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", 700)
+          .text("Killing: 1");
+
+        svg
+          .append("text")
+          .attr("id", "l8")
+          .attr("class", "label")
+          .attr("x", 1000)
+          .attr("y", 600)
+          .attr("font-family", "monospace")
+          .attr("font-size", "1.3em")
+          .attr("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", 700)
+          .text("Other: 19");
+
+        d3.selectAll("#datacircle").attr("opacity", 1);
+
+    
+
+  
+
+        d3.selectAll(".label").attr("opacity", 1);
+
+        d3.select("#vis").selectAll("#main").transition().attr("opacity", 0);
+      }
+
+    
+
+
+      let activationFunctions = [
+        draw1,
+        draw2,
+        draw3,
+        draw4,
+        draw5
+
+      ];
+
+      ///SCOLLER!@#!@#@!#!@#@!#
+   
+
+      let scroll = scroller().container(d3.select("#graphic"));
+      scroll();
+
+      let lastIndex,
+        activeIndex = 0;
+
+      scroll.on("active", function (index) {
+        d3.selectAll(".step")
+          .transition()
+          .duration(500)
+          .attr("opacity", function (d, i) {
+            return i === index ? 1 : 0.1;
+          });
+
+        activeIndex = index;
+        let sign = activeIndex - lastIndex < 0 ? -1 : 1;
+        let scrolledSections = d3.range(
+          lastIndex + sign,
+          activeIndex + sign,
+          sign
+        );
+        scrolledSections.forEach((i) => {
+          activationFunctions[i]();
+        });
+        lastIndex = activeIndex;
+      });
+
+      scroll.on("progress", function (index, progress) {
+        if ((index == 2) & (progress > 0.7)) {
+        }
+      });
+
+      function scroller() {
+        let container = d3.select("body");
+        let dispatch = d3.dispatch("active", "progress");
+        let sections = d3.selectAll(".step");
+        let sectionPositions;
+
+        let currentIndex = -1;
+        let containerStart = 0;
+
+        function scroll() {
+          d3.select(window)
+            .on("scroll.scroller", position)
+            .on("resize.scroller", resize);
+
+          resize();
+
+          let timer = d3.timer(function () {
+            position();
+            timer.stop();
+          });
+        }
+
+        function resize() {
+          sectionPositions = [];
+          let startPos;
+
+          sections.each(function (d, i) {
+            let top = this.getBoundingClientRect().top;
+
+            if (i === 0) {
+              startPos = top;
+            }
+            sectionPositions.push(top - startPos);
+          });
+        }
+
+        function position() {
+          let pos = window.pageYOffset - 300 - containerStart;
+          let sectionIndex = d3.bisect(sectionPositions, pos);
+          sectionIndex = Math.min(sections.size() - 1, sectionIndex);
+
+          if (currentIndex !== sectionIndex) {
+            dispatch.call("active", this, sectionIndex);
+            currentIndex = sectionIndex;
+          }
+
+          let prevIndex = Math.max(sectionIndex - 1, 0);
+          let prevTop = sectionPositions[prevIndex];
+          let progress =
+            (pos - prevTop) / (sectionPositions[sectionIndex] - prevTop);
+          dispatch.call("progress", this, currentIndex, progress);
+        }
+
+        scroll.container = function (value) {
+          if (arguments.legth === 0) {
+            return container;
+          }
+          container = value;
+          return scroll;
+        };
+
+        scroll.on = function (action, callback) {
+          dispatch.on(action, callback);
+        };
+
+        return scroll;
+      }
+    </script>
+  </body>
+</html>
